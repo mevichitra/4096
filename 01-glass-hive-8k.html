@@ -82,7 +82,7 @@ setInterval(P,200);
     n=Math.max(n,performance.now()/16e3|0);
     b=A.createBuffer(2,L,R);D=[b.getChannelData(0),b.getChannelData(1)];
     for(i=0;i<L;i++){
-      i%3e4||await new Promise(setTimeout);
+      i%3e4||document.hidden||await new Promise(setTimeout);
       j=n*L+i;t=j/R;
       // S: section of the song (0 intro, 1 build, 2-3 main, 4 breakdown, 5-6 peak, 7 outro), K: 8-second phrase within it
       S=t/32&7;K=t/8&3;

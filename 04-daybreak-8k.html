@@ -92,7 +92,7 @@ setInterval(P,200);
     n=Math.max(n,performance.now()/16e3|0);
     b=A.createBuffer(2,L,R);D=[b.getChannelData(0),b.getChannelData(1)];
     for(i=0;i<L;i++){
-      i%3e4||await new Promise(setTimeout);
+      i%3e4||document.hidden||await new Promise(setTimeout);
       j=n*L+i;t=j/R;u=0;
       S=(t/32|0)%9;d=S/3|0;Q=S%3;Y=d>1?5:0;
       q=t*3|0;e=t*3%1/3;

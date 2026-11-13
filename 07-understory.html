@@ -10,7 +10,7 @@ float N(vec2 p){
   return mix(mix(H(i),H(i+vec2(1,0)),f.x),mix(H(i+vec2(0,1)),H(i+1.),f.x),f.y);
 }
 void main(){
-  float T=r.z,s=mod(T,128.),R=.25+.75*pow(.5-.5*cos(T*.0491),2.),L=exp(-max(s-64.,0.)*8.)*step(64.,s)*(.6+.4*sin(T*60.)),k,x,i,d;
+  float T=r.z,s=mod(T,128.),R=.5+.5*pow(.5-.5*cos(T*.0491),2.),L=exp(-mod(s+32.,64.)*8.)*(.6+.4*sin(T*60.)),k,x,i,d;
   vec2 u=(gl_FragCoord.xy*2.-r.xy)/r.y,p;
   float l=dot(u,u);
   u+=m*.3;
@@ -19,10 +19,10 @@ void main(){
   vec3 f=mix(vec3(.04,.1,.06),vec3(.3,.48,.36),.5+.4*u.y+.2*N(u*2.+T*.05))*(1.-.4*R)+L*1.2,c=f;
   for(int j=0;j<5;j++){
     k=5.-float(j);
-    x=u.x*(.5+k*.6)+T*.3/k+k*7.;
+    x=u.x*(1.+k)+T*.3/k+k*7.;
     i=floor(x);
-    d=abs(fract(x)-.5+(H(vec2(i,k+9.))-.5)*.5+.02*sin(u.y*3.+i))-.05-.12*H(vec2(i,k));
-    c=mix(c,mix(vec3(.04,.03,.02),f,k/6.),(1.-smoothstep(0.,.02,d))*step(.35,H(vec2(i,k+3.))));
+    d=abs(fract(x)-.5+(H(vec2(i,k+9.))-.5)*.5+.02*sin(u.y*3.+i+T*.8))-.02-.03*H(vec2(i,k));
+    c=mix(c,mix(vec3(.05,.13,.04)*(1.-.5*step(.46,abs(fract(u.y*2.5+i*.37)-.5))),f,k/6.),(1.-smoothstep(0.,.02,d))*step(.15,H(vec2(i,k+3.))));
   }
   c*=1.-.8*smoothstep(.2,1.1,u.y+.3*N(vec2(u.x*4.,T*.1)));
   if(w<0.){
@@ -56,12 +56,12 @@ onmousemove=e=>g.uniform2f(V,e.x/innerWidth-.5,.5-e.y/innerHeight);
 onclick=_=>A.resume();
 A.onstatechange=P=_=>B&&!s&&A.state<'s'&&(s=A.createBufferSource(),s.buffer=B,s.loop=1,s.connect(A.destination),s.start(0,performance.now()/1e3%128));
 (async _=>{
-  let k,D,i,t,v,w,a,e,q,x,n,h,lo,th,dp,de,df,b1,l1,rb,rl,bp,be,bf,R=24e3,L=R*128,b=A.createBuffer(2,L,R);
+  let k,D,i,t,v,w,a,e,q,n,h,lo,th,dp,de,df,b1,l1,rb,rl,bp,be,bf,R=24e3,L=R*128,b=A.createBuffer(2,L,R);
   for(k=0;k<2;k++){
     D=b.getChannelData(k);n=h=lo=th=dp=de=df=b1=l1=rb=rl=bp=be=bf=0;
     for(i=0;i<L;i++){
       i%5e4||await new Promise(setTimeout);
-      t=i/R;a=.25+.75*(.5-.5*Math.cos(t*.0491))**2;
+      t=i/R;a=.5+.5*(.5-.5*Math.cos(t*.0491))**2;
       w=Math.random()-.5;
       h+=(w-h)*.3;lo+=(w-lo)*.02;
       v=(w-h)*a*.7+h*a*.45+lo*a*a*1.6;
@@ -72,10 +72,8 @@ A.onstatechange=P=_=>B&&!s&&A.state<'s'&&(s=A.createBufferSource(),s.buffer=B,s.
       n+=(Math.random()-.5-n)*.004;v+=n*(1+Math.sin(t*.31+k))*2;
       if(Math.random()<1.5e-4)de=1,df=.2+Math.random()*.5,dp=0;
       dp+=df;df*=.9997;de*=.9985;v+=Math.sin(dp)*de*.1;
-      q=t>65.5?t-65.5:99;
+      q=(t+30.5)%64;
       th+=(w-th)*.02;v+=th*Math.exp(-q*.35)*Math.min(1,q*4)*(1+.6*Math.sin(q*7+2*Math.sin(q*3)))*6;
-      x=t%7;
-      if(a<.5&&x<.12)v+=Math.sin((15e3+4e4*x)*x)*Math.sin(x*26)*(.5-a)*.04;
       D[i]=Math.tanh(v*1.3)
     }
   }
