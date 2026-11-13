@@ -2,7 +2,7 @@
 
 Art and music that fit in 4,096 bytes.
 
-Each piece is one self-contained HTML file: the picture and the music are computed live by the code in that file, with no images, sound files or libraries. Every piece also has a longer 8,192-byte cut.
+Each piece is one self-contained HTML file: the picture and the music are computed live by the code in that file, with no images, sound files or libraries. Most pieces also have a longer 8,192-byte cut.
 
 | # | Piece | Music |
 |---|---|---|
@@ -12,5 +12,6 @@ Each piece is one self-contained HTML file: the picture and the music are comput
 | 04 | Daybreak | Caravan |
 | 05 | Becoming | Seedsong |
 | 06 | Ember | Slow Burn |
+| 07 | Understory | Rain (natural sound, no music) |
 
 `index.html` is the gallery; it is not size-limited. The numbered files are the pieces.

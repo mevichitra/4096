@@ -112,7 +112,7 @@
 <!-- HUD shown while a piece is playing -->
 <div class="hud tl"><span class="c" id="h-site">4096</span> <span class="d">/</span> <span class="o" id="h-no"></span><br><span class="big" id="h-theme"></span></div>
 <div class="hud tr"><span class="d">file size</span><br><span class="m"><i id="h-bar"></i></span><span id="h-bytes"></span></div>
-<div class="hud bl"><span class="d">music:</span> <span id="h-track"></span><br><span class="d" id="h-tip">drag to look around. double-click for fullscreen.</span></div>
+<div class="hud bl"><span class="d" id="h-label">music:</span> <span id="h-track"></span><br><span class="d" id="h-tip">drag to look around. double-click for fullscreen.</span></div>
 <div class="hud br">
   <button class="k" id="index">Back</button>
   <button class="k" id="sound">Sound: off</button>
@@ -155,6 +155,8 @@ const PIECES = [
     more: [{ label: '8K', limit: 8192, file: '05-becoming-8k.html', bytes: 7566 }] },
   { file: '06-ember.html', thumb: 'thumbs/06-ember.jpg', theme: 'Ember', track: 'Slow Burn', bytes: 3674,
     more: [{ label: '8K', limit: 8192, file: '06-ember-8k.html', bytes: 4887 }] },
+  // noMusic: the piece has natural sound only, so the site labels it "sound" instead of "music"
+  { file: '07-understory.html', thumb: 'thumbs/07-understory.jpg', theme: 'Understory', track: 'Rain', noMusic: true, bytes: 3320 },
 ];
 
 const $ = id => document.getElementById(id);
@@ -175,6 +177,7 @@ function load(i) {
   current = i;
   $('h-no').textContent = pad(i + 1);
   $('h-theme').textContent = p.theme;
+  $('h-label').textContent = p.noMusic ? 'sound:' : 'music:';
   $('h-track').textContent = p.track;
   $('h-bytes').textContent = `${cut.bytes.toLocaleString()} / ${cut.limit.toLocaleString()} B`;
   $('h-bar').style.width = Math.min(100, cut.bytes / cut.limit * 100) + '%';
@@ -249,7 +252,7 @@ function paint() {
       </span></button>`;
     li.querySelector('img').src = p.thumb;
     li.querySelector('.theme').textContent = p.theme;
-    li.querySelector('.music').textContent = 'music: ' + p.track;
+    li.querySelector('.music').textContent = (p.noMusic ? 'sound: ' : 'music: ') + p.track;
     li.firstChild.onclick = () => enter(i);
     $('list').appendChild(li);
   });
