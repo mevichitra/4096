@@ -10,25 +10,25 @@ float N(vec2 p){
   return mix(mix(H(i),H(i+vec2(1,0)),f.x),mix(H(i+vec2(0,1)),H(i+1.),f.x),f.y);
 }
 void main(){
-  float T=r.z,s=T,R=clamp(.5+.25*sin(T*.021)+.2*sin(T*.047+1.)+.1*sin(T*.13+2.),.15,1.),Q=floor(T/32.),q=s-Q*32.-3.5-mod(Q*13.,17.),L=exp(-q*8.)*step(0.,q)*step(mod(Q*7.+3.,11.),2.5)*(.6+.4*sin(T*60.)),k,x,i,d;
+  float T=r.z,s=T,R=clamp(.5+.25*sin(T*.021)+.2*sin(T*.047+1.)+.1*sin(T*.13+2.),.15,1.),Q=floor(T/32.),q=s-Q*32.-3.5-mod(Q*13.,17.),L=exp(-max(q,0.)*8.)*step(0.,q)*step(mod(Q*7.+3.,11.),2.5)*(.6+.4*sin(T*60.)),k,x,i,d;
   vec2 u=(gl_FragCoord.xy*2.-r.xy)/r.y,p;
   float l=dot(u,u);
-  u+=m*.3;
+  u+=m*.3+vec2(0,.012*sin(T*1.9));
   float w=u.y+.62+.03*sin(u.x*2.+1.);
   if(w<0.){u.y=-u.y-1.24;u.x+=.02*sin(u.y*40.+T*3.)+.01*sin(u.y*90.-T*5.);}
-  vec3 f=mix(vec3(.04,.1,.06),vec3(.3,.48,.36),.5+.4*u.y+.2*N(u*2.+T*.05))*(1.-.4*R)+L*1.2,c=f;
-  for(int j=0;j<5;j++){
-    k=5.-float(j);
+  vec3 f=mix(vec3(.04,.1,.06),vec3(.3,.48,.36),.5+.4*u.y+.2*N(u*2.+T*.05))*mix(vec3(1),vec3(.55,.62,.75),R)+L*1.2,c=f;
+  for(int j=0;j<7;j++){
+    k=7.-float(j);
     x=u.x*(.5+k*.6)+T*.3/k+k*7.;
     i=floor(x);
     d=abs(fract(x)-.5+(H(vec2(i,k+9.))-.5)*.5+.02*sin(u.y*3.+i))-.05-.12*H(vec2(i,k));
-    c=mix(c,mix(vec3(.04,.03,.02),f,k/6.),(1.-smoothstep(0.,.02,d))*step(.35,H(vec2(i,k+3.))));
+    c=mix(c,mix(vec3(.04,.03,.02)+.03*H(vec2(i,k+5.))*vec3(.3,1,.2),f*(.85+.3*N(vec2(x*.4+T*.03,k))),k/8.),(1.-smoothstep(0.,.02,d))*step(.35,H(vec2(i,k+3.))));
   }
-  c*=1.-.8*smoothstep(.2,1.1,u.y+.3*N(vec2(u.x*4.,T*.1)));
+  c*=1.-.8*smoothstep(.2,1.1,u.y+.3*N(vec2(u.x*4.,T*.1))+.12*N(vec2(u.x*17.,3.+T*.2)));
   if(w<0.){
     p=vec2(u.x,w*6.);
-    c=c*.6+.2*pow(N(vec2(p.x*3.-T*.9,p.y*4.+T*.2)),3.);
-    for(int j=0;j<6;j++){
+    c=c*.6+.2*pow(N(vec2(p.x*3.-T*.9,p.y*4.+T*.2)),3.)+.12*pow(N(vec2(p.x*9.-T*1.6,p.y*12.)),6.);
+    for(int j=0;j<10;j++){
       k=float(j);x=fract(T*.7+k*.37);
       i=length(p-(vec2(H(vec2(k,floor(T*.7+k*.37))),H(vec2(k+9.,floor(T*.7+k*.37))))*2.-1.)*vec2(1.7,1.1)+vec2(0,1.2));
       c+=.5*R*sin(40.*i-x*30.)*exp(-i*4.)*(1.-x)*clamp((x-i)*9.,0.,1.);
@@ -37,7 +37,7 @@ void main(){
   c*=.5+.5*smoothstep(0.,.03,abs(w));
   for(int j=0;j<3;j++){
     k=float(j);
-    p=vec2(u.x*(20.+k*15.)+u.y*(2.+k),u.y*(1.5+k)+T*(6.+k*3.));
+    p=vec2(u.x*(20.+k*15.)+u.y*(2.+k+2.*sin(T*.31)),u.y*(1.5+k)+T*(6.+k*3.));
     p.y+=H(vec2(floor(p.x),k))*9.;x=fract(p.y);
     c+=vec3(.6,.7,.7)*step(1.-R*.5,H(floor(p)))*(1.-smoothstep(0.,.1,abs(fract(p.x)-.5)))*x*(1.-x)/(1.+k)*step(0.,w);
   }
@@ -63,7 +63,7 @@ A.onstatechange=P=_=>{
 };
 setInterval(P,200);
 (async _=>{
-  let R=A.sampleRate,L=R*16,X=[new Float32Array(1<<17),new Float32Array(1<<17)],n=0,i,j,k,t,b,D,v,w,u,e,f,q,x,o,c,S,K,Y,H,h=[0,0],lo=[0,0],b1=[0,0],l1=[0,0],rb=[0,0],rl=[0,0],wn=[0,0],be=[0,0,0,0],bf=[0,0,0,0],bp=[0,0,0,0],th=0,a,z;
+  let R=A.sampleRate,L=R*16,X=[new Float32Array(1<<17),new Float32Array(1<<17)],n=0,i,j,k,t,b,D,v,w,u,e,f,q,x,o,c,S,K,Y,H,h=[0,0],lo=[0,0],b1=[0,0],l1=[0,0],b2=[0,0],l2=[0,0],rb=[0,0],rl=[0,0],wn=[0,0],sh=[0,0],de=[0,0],df=[0,0],dp=[0,0],be=[0,0,0,0,0,0],bf=[0,0,0,0,0,0],bp=[0,0,0,0,0,0],th=0,a,z,y,G;
   for(;;n++){
     while(n>performance.now()/16e3+2)await new Promise(r=>setTimeout(r,400));
     n=Math.max(n,performance.now()/16e3|0);
@@ -72,34 +72,44 @@ setInterval(P,200);
       i%3e4||await new Promise(setTimeout);
       j=n*L+i;t=j/R;u=0;
       a=Math.min(1,Math.max(.15,.5+.25*Math.sin(t*.021)+.2*Math.sin(t*.047+1)+.1*Math.sin(t*.13+2)));
+      G=Math.max(0,Math.sin(t*.31)*Math.sin(t*.07));
       w=Math.random()-.5;
       S=t/32|0;q=t%32-5-S*13%17;
       v=0;
       if((S*7+3)%11<3&&q>0){
         e=S&1;
         th+=(w-th)*.02;
-        v=th*Math.exp(-q*.35)*Math.min(1,q*(e?1.5:30))*(1+.6*Math.sin(q*7+2*Math.sin(q*3)))*(e?5:9)+(e?0:w*Math.exp(-q*9)*.8)
+        v=th*Math.exp(-q*.35)*Math.min(1,q*(e?1.5:30))*(1+.6*Math.sin(q*7+2*Math.sin(q*3)))*(e?5:9)+(e?0:w*(Math.exp(-q*9)+.5*Math.exp(-q*7%1*8-q*2.5))*.8)
       }
       x=t%19;
       if(a<.4&&x<.12&&(t/19&3)<1)v+=Math.sin((15e3+4e4*x)*x)*Math.sin(x*26)*.03;
       for(k=0;k<2;k++){
         w=Math.random()-.5;
+        sh[k]+=(Math.random()-.5-sh[k])*5e-4;
+        z=a*(1+sh[k]*25+G*.3);
         h[k]+=(w-h[k])*.3;lo[k]+=(w-lo[k])*.02;
-        o=(w-h[k])*a*.7+h[k]*a*.45+lo[k]*a*a*1.6;
+        o=(w-h[k])*z*.7+h[k]*z*.45+lo[k]*z*z*1.6;
         c=(2800+k*900)*6.3/R;
-        b1[k]+=c*((Math.random()<a*.02?Math.random()-.5:0)*3-l1[k]-b1[k]*.3);l1[k]+=c*b1[k];
-        o+=b1[k]*.5;
+        b1[k]+=c*((Math.random()<z*.02?Math.random()-.5:0)*3-l1[k]-b1[k]*.3);l1[k]+=c*b1[k];
+        c=(1100+k*300)*6.3/R;
+        b2[k]+=c*((Math.random()<z*.008?Math.random()-.5:0)*4-l2[k]-b2[k]*.25);l2[k]+=c*b2[k];
+        o+=b1[k]*.5+b2[k]*.4;
+        if(Math.random()<4/R)de[k]=1,df[k]=(2500+Math.random()*3e3)*6.283/R,dp[k]=0;
+        dp[k]+=df[k];df[k]*=1-6/R;de[k]*=1-30/R;
+        o+=Math.sin(dp[k])*de[k]*.08;
         c=600*6.3/R;
         rb[k]+=c*(w-rl[k]-rb[k]*.8);rl[k]+=c*rb[k];
-        o+=rb[k]*.6;
-        for(q=0;q<2;q++){
-          z=k*2+q;
-          if(Math.random()<8/R)be[z]=.5+Math.random()*.5,bf[z]=(500+Math.random()*900)*6.283/R,bp[z]=0;
-          bp[z]+=bf[z];bf[z]*=1+2/R;be[z]*=1-25/R;
-          o+=Math.sin(bp[z])*be[z]*.025
+        o+=rb[k]*.6+rl[k]*.25;
+        for(q=0;q<3;q++){
+          y=k*3+q;
+          if(Math.random()<(5+9*a)/R)be[y]=.5+Math.random()*.5,bf[y]=(500+Math.random()*900)*6.283/R,bp[y]=0;
+          bp[y]+=bf[y];bf[y]*=1+2/R;be[y]*=1-25/R;
+          o+=Math.sin(bp[y])*be[y]*.025
         }
-        wn[k]+=(Math.random()-.5-wn[k])*.004;o+=wn[k]*(1+Math.sin(t*.31+k))*2;
-        D[k][i]=Math.tanh((o+v)*1.3)
+        wn[k]+=(Math.random()-.5-wn[k])*.004;o+=wn[k]*(1+Math.sin(t*.31+k)+G*2)*2;
+        y=v+X[1-k][j-(R*(.37+k*.11)|0)&131071]*.5;
+        X[k][j&131071]=y;
+        D[k][i]=Math.tanh((o+y)*1.3)
       }
     }
     B[n]=b;delete B[n-3]
