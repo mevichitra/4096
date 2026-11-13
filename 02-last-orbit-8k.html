@@ -1,0 +1,127 @@
+<title>4096 / 02 Last Orbit 8K - Undertow (long cut)</title><canvas id=c style=position:fixed;inset:0;width:100%;height:100%></canvas><script>
+g=c.getContext('webgl');p=g.createProgram();
+[[35633,'attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}'],[35632,`precision highp float;
+uniform vec4 r;
+uniform vec2 m;
+float H(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+float N(vec2 p){
+  vec2 i=floor(p),f=fract(p);
+  f*=f*(3.-2.*f);
+  i.x=mod(i.x,16.);
+  float j=mod(i.x+1.,16.);
+  return mix(mix(H(i),H(vec2(j,i.y)),f.x),mix(H(i+vec2(0,1)),H(vec2(j,i.y+1.)),f.x),f.y);
+}
+void main(){
+  float E=r.w>6.?1.:r.w,t=r.z*.1,D=11.+3.*sin(t*.5)-(2.5+.4*min(E,5.))*pow(.5+.5*sin(r.z*.19635),8.),d,s,R,I,e,G,T=1.,b=exp(-fract(r.z/4.)*6.);
+  vec2 u=(gl_FragCoord.xy*2.-r.xy)/r.y+m*2.;
+  u+=u*sin(length(u)*25.-r.z*6.)*.004*E;
+  vec3 p=vec3(cos(t)*D,D*(.12+.25*sin(t*.7)+.9*pow(sin(r.z*.01227),4.)),sin(t)*D),
+  w=normalize(-p),
+  x=normalize(cross(w,vec3(.2*sin(t*.3),1,0))),
+  v=normalize(u.x*x+u.y*cross(x,w)+1.6*w),q,z,c=vec3(0),k=cross(p,v),O=6.5*vec3(cos(r.z*.2),.35*sin(r.z*.2+1.),-sin(r.z*.2));
+  float h=dot(k,k);
+  for(int i=0;i<150;i++){
+    d=dot(p,p);
+    if(d<1.){T=0.;break;}
+    if(d>2500.)break;
+    s=.08*sqrt(d);
+    q=p+v*s;
+    if(p.y*q.y<0.){
+      k=mix(p,q,p.y/(p.y-q.y));
+      R=length(k.xz);
+      I=(atan(k.z,k.x)/6.2832+.5)*16.;
+      I=N(vec2(I+r.z*.3,R*2.-r.z*.1))*.6+N(vec2(I*2.+r.z*.5,R*5.))*.4;
+      I*=1.+.5*sin(atan(k.z,k.x)*2.+R*1.5+r.z*.4);
+      I+=.6*exp(-4.*abs(R-2.6-fract(r.z/4.)*8.)-fract(r.z/4.)*3.)+1.5*exp(-3.*length(k.xz-3.8*vec2(cos(r.z*.8),-sin(r.z*.8))));
+      G=1.-.6*dot(normalize(vec3(k.z,0,-k.x)),normalize(v));
+      I*=I*smoothstep(2.6,3.2,R)*(1.-smoothstep(5.,10.,R))*pow(G,3.)*(1.+b*exp(3.-R))*(4.+.5*E)*(1.+.3*sin(r.z*.2))/R;
+      c+=T*I*mix(vec3(1,.25,.05),vec3(1,.85,.6),exp(.35*(2.6-R)))*pow(vec3(G),vec3(-.5,0,1))*mix(vec3(1),vec3(.7,.9,1.4),E/6.);
+      T*=exp(-I*2.);
+      c+=T*vec3(1,.6,.3)*pow(.5+.5*sin(atan(k.z,k.x)+R*.8+r.z*.6),30.)*smoothstep(4.,9.,R)*(1.-smoothstep(9.,18.,R))*.3;
+    }
+    e=clamp(dot(O-p,v),0.,s);z=p+v*e-O;
+    c+=T*(vec3(1,.5,.2)*.004*s/d*(1.+3.*exp(-fract(r.z*(E>4.5?1.:.5))*5.)*step(1.5,E)*step(.5,abs(E-4.)))+vec3(.6,.8,1)*.01/(dot(z,z)+.004)+vec3(.3,.5,1)*exp(-dot(p.xz,p.xz)/(.1+.02*p.y*p.y)-abs(p.y)*.15)*(.5+N(vec2(1,abs(p.y)*.7-r.z*2.)))*s*(.1+.06*E));
+    v-=1.5*h*p/(d*d*sqrt(d))*s;
+    p=q;
+  }
+  v=normalize(v);
+  q=v*90.;k=fract(q)-.5;q=floor(q);
+  c+=T*(step(.975,H(q.xy+q.z*7.))*exp(-dot(k,k)*30.)*(2.+sin(r.z*3.+q.x))*(.6+.4*cos(q.x+vec3(0,2,4)))+(.1+.08*cos(r.z*.025+vec3(0,2,4)))*pow(N(v.xy*4.+v.z*3.),4.));
+  c+=exp(-mod(r.z,32.)*3.)*step(abs(r.w-5.),.1);
+  c=(1.-exp(-c*1.4))*(1.-.1*dot(u,u));
+  gl_FragColor=vec4(sqrt(c)+fract(sin(dot(gl_FragCoord.xy,vec2(12.9,78.2))+r.z)*4e4)*.04-.02,1);
+}`]].map(([t,s])=>{h=g.createShader(t);g.shaderSource(h,s);g.compileShader(h);g.attachShader(p,h)});
+g.bindAttribLocation(p,0,'p');g.linkProgram(p);g.useProgram(p);
+g.bindBuffer(34962,g.createBuffer());g.bufferData(34962,new Float32Array([-1,-1,3,-1,-1,3]),35044);
+g.enableVertexAttribArray(0);g.vertexAttribPointer(0,2,5126,0,0,0);
+U=g.getUniformLocation(p,'r');V=g.getUniformLocation(p,'m');A=new AudioContext;B=[];s=0;
+W=t=>{
+  if(c.width!=innerWidth||c.height!=innerHeight)g.viewport(0,0,c.width=innerWidth,c.height=innerHeight);
+  g.uniform4f(U,c.width,c.height,t/1e3,t/32e3&7);
+  g.drawArrays(4,0,3);requestAnimationFrame(W)};
+W(0);
+onmousemove=e=>g.uniform2f(V,e.x/innerWidth-.5,.5-e.y/innerHeight);
+onclick=_=>A.resume();
+A.onstatechange=P=_=>{
+  if(A.state<'s'){
+    M=performance.now()/1e3;
+    if(!s)s=[],N=M/16|0,Z=A.currentTime-M;
+    for(;B[N]&&N<=M/16+1;N++)q=A.createBufferSource(),q.buffer=B[N],q.connect(A.destination),d=Z+N*16,q.start(Math.max(d,A.currentTime),Math.max(A.currentTime-d,0)),s.push(q)
+  }
+};
+setInterval(P,200);
+(async _=>{
+  let R=A.sampleRate,L=R*16,X=[new Float32Array(1<<17),new Float32Array(1<<17)],n=0,i,j,k,t,b,D,v,w,u,e,f,q,x,o,c,S,K,Y,H,lp=0,g=0,p=0,b1=0,l1=0,b2=0,l2=0,lc=0,m=0,br=0,ph=0,sw;
+  for(;;n++){
+    while(n>performance.now()/16e3+2)await new Promise(r=>setTimeout(r,400));
+    n=Math.max(n,performance.now()/16e3|0);
+    b=A.createBuffer(2,L,R);D=[b.getChannelData(0),b.getChannelData(1)];
+    for(i=0;i<L;i++){
+      i%3e4||await new Promise(setTimeout);
+      j=n*L+i;t=j/R;u=0;
+      S=t/32&7;Y=S==6?3:0;
+      H=[0,-4,-7,-5][t/8&3]+Y;
+      e=t%8;x=Math.min(1,e/2,4-e/2);
+      v=0;
+      for(o=0;o<6;o++)v+=55*2**((H+[0,7,12,14,19,24][o])/12)*(1+(o&1)*.004)*t%1-.5;
+      sw=v;
+      lp+=(v-lp)*Math.min(1,(150+110*(S<7?S:1)+200*Math.sin(t*.2)**2)*6.3/R);
+      v=lp*(S?x:.4)*.2+Math.sin(345.6*2**(Y/12)*t)*.1;
+      if(S>3&&S<7)c=(450+250*Math.sin(t*.5))*6.3/R,b1+=c*(sw-l1-b1*.1),l1+=c*b1,c*=1.8,b2+=c*(sw-l2-b2*.1),l2+=c*b2,v+=(b1+b2)*.012*x;
+      q=S>4&&S<7?2:4;e=t%q;
+      f=220*2**((H+[12,19,15,22,14,19,10,17,24,22,19,15][t/q%12|0])/12)*6.283*t;
+      v+=Math.sin(f+2*Math.sin(f*3.5)*Math.exp(-e*2))*Math.exp(-e*1.5)*(S?.12:.07);
+      if(S>1&&S!=4&&S<7){
+        e=t%(S>4?1:2);
+        u=(Math.sin(283*e)*Math.exp(-e*5)+(e>.25)*Math.sin(283*(e-.25))*Math.exp(-(e-.25)*7)*.6)/4;
+        e=t*4%1;f=880*2**((H+[0,7,12,14,19,14,12,7][t*4&7])/12)*6.283*t;
+        v+=Math.sin(f)*Math.exp(-e*6)*(S>4?.06:.03)
+      }
+      if(S==3||S>4&&S<7){
+        g+=([12,15,19,17,15,14,12,10,15,19,22,20,19,17,15,14][t/2&15]+Y-g)*8/R;
+        p+=110*2**((g+.15*Math.sin(t*5))/12)/R;
+        lc+=(p%1+p*1.004%1-1-lc)*5600/R;
+        v+=lc*Math.min(1,t%2*3)*.2
+      }
+      if(S>4&&S<7)e=t%8,br+=(sw-br)*Math.min(1,(150+1300*Math.min(1,e/3))*6.3/R),v+=br*Math.min(1,e)*x*.1;
+      if(S&&S<7)f=440*2**(H/12)*6.283*t,v+=(Math.sin(f)+Math.sin(f*1.003)+Math.sin(f*1.5))*x*.012*Math.min(S,4);
+      if(S>1&&S<7)ph+=(3+13*Math.sin(t*.098)**2)/R,q=ph%1,v+=Math.sin(1125*q)*Math.exp(-q*25)*.05;
+      if((S==3||S==6)&&t%32>24)v+=Math.sin(7540*t)*(0x5d75>>(t*8&15)&1)*Math.min(1,t*8%1*9)*.02;
+      if(S>4&&S<7)e=(t+1)%2,f=330*2**((H+[12,19,15,22,14,19,10,17,24,22,19,15][t/2%12|0])/12)*6.283*t,v+=Math.sin(f+2*Math.sin(f*3.5)*Math.exp(-e*2))*Math.exp(-e*2)*.05;
+      if(S==1||S==2||S>6)e=t%4,f=440*2**((Y+[19,17,15,12,14,15,12,10][t/4&7])/12)*6.283*t,v+=Math.sin(f+Math.sin(f*2)*.3)*Math.min(1,e)*Math.exp(-e*.6)*.05;
+      e=t%32;
+      if(S==4&&e<8)v+=Math.sin(900*Math.exp(-e*.5))*Math.exp(-e*.4)*.15;
+      m+=(Math.random()-.5-m)*.02;v+=m*(1+Math.sin(t*.393)+(e>4&e<8)*(e-4))*.5;
+      if(e>28)v+=m*(e-28)**2*.5;
+      if(S==5&&e<3)u+=Math.sin(400*Math.sqrt(e))*Math.exp(-e*1.5)*.5;
+      for(k=0;k<2;k++){
+        w=X[k];
+        o=v+X[1-k][j-(R*.75|0)&131071]*.5+(w[j-(R*(.031+k*.006)|0)&131071]+w[j-(R*(.043+k*.004)|0)&131071])*.2;
+        w[j&131071]=o;
+        D[k][i]=Math.tanh((o+u)*1.1)
+      }
+    }
+    B[n]=b;delete B[n-3]
+  }
+})()
+</script>

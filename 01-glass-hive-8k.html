@@ -1,0 +1,158 @@
+<title>4096 / 01 Glass Hive 8K - Lantern (long cut)</title><canvas id=c style=position:fixed;inset:0;width:100%;height:100%></canvas><script>
+g=c.getContext('webgl');p=g.createProgram();
+[[35633,'attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}'],[35632,`precision highp float;
+uniform vec4 r;
+uniform vec2 m;
+vec4 o;
+vec3 P,N,O;
+float s,t,b,z,K,X,Q=0.,G=1.;
+float M(vec3 p){
+  float k,c=1.;
+  o=vec4(1);
+  for(int i=0;i<10;i++){
+    p=2.*fract(.5*p+.5)-1.;
+    k=dot(p,p);
+    o=min(o,vec4(abs(p),k));
+    k=s/k;
+    p*=k;c*=k;
+  }
+  return .25*abs(p.y)/c;
+}
+vec3 C(vec3 a,vec3 v){
+  float d,g=0.;
+  z=0.;
+  for(int i=0;i<100;i++){
+    P=a+v*z;d=M(P);
+    if(d<.0005*z||z>20.)break;
+    z+=d;g+=1.;
+  }
+  d=z-2.5*mod(r.z,r.w>5.&&r.w<7.?2.:8.);X=min(1.,exp(-d*d)+Q);
+  d=length(a+v*clamp(dot(O-a,v),0.,z)-O);
+  vec3 c=mix(vec3(.1,.3,1),.5+.5*cos(vec3(0,2,4)+z+t*4.+K),X)*pow(g/100.,2.)*(1.+3.*b)*G+vec3(1,.6,.3)*(1.+b)*.003/(d*d+.001);
+  for(int i=0;i<3;i++){vec3 S=O+.3*sin(r.z*vec3(1,1.3,1.7)+float(i)*2.1+vec3(0,2,4));d=length(a+v*clamp(dot(S-a,v),0.,z)-S);c+=vec3(.3,.6,1)*(.0006+.001*b)/(d*d+2e-4);}
+  if(z<20.){
+    vec4 q=o;
+    vec2 e=vec2(.001*z+1e-4,0);
+    N=normalize(vec3(M(P+e.xyy)-M(P-e.xyy),M(P+e.yxy)-M(P-e.yxy),M(P+e.yyx)-M(P-e.yyx)));
+    c+=((.5+.5*cos(vec3(0,1.+X,2.+X+X)+q.w*(6.+3.*X)+q.x*(3.+X+X)+t*2.+K))*(.15+max(dot(N,vec3(.6,.7,.4)),0.)+X*vec3(.5,.1,.7)*max(-N.y,0.)+vec3(1,.6,.3)*.05/(.02+dot(P-O,P-O)))+pow(max(dot(reflect(v,N),vec3(.6,.7,.4)),0.),20.)+vec3(.2,.5,1)*(1.-smoothstep(0.,.04,abs(fract(q.w*3.-r.z*.3)-.5))))*clamp(q.w*2.,0.,1.)*exp(-.3*z);
+  }
+  return c;
+}
+void main(){
+  t=r.z*.15;b=exp(-4.*fract(r.z*2.))*fract(r.w)*2.;if(r.w>5.&&r.w<7.)Q=.3;K=floor(r.z/8.);O=vec3(1.5*sin(t*.4+2.),.5,1.5*cos(t*.29+1.));
+  s=1.2+.15*sin(t*.7);
+  vec2 u=(gl_FragCoord.xy*2.-r.xy)/r.y;
+  float A=atan(u.x,u.y),l=length(u),f;
+  if(mod(K,4.)>2.){Q=.4;f=3.1416/(3.+floor(mod(r.z*2.,6.)));A=abs(mod(A+r.z*(r.w>5.?.9:.3),f+f)-f);u=l*(1.+.3*sin(l*6.-r.z*4.))*vec2(sin(A),cos(A));}
+  u+=m*2.;
+  vec3 a=vec3(2.5*sin(t*.31),.5+.3*sin(t*.43),2.5*cos(t*.37)),
+  w=normalize(O*vec3(1,.6,1)-a),
+  x=normalize(cross(w,vec3(sin(t*.2)*.3,1,0))),
+  v=normalize(u.x*x+u.y*cross(x,w)+(1.5-(r.w>5.?.4:.2)*b)*w),c=C(a,v);
+  if(z<20.){f=.35*exp(-.3*z);G=.1;c+=f*C(P+N*.01,reflect(v,N));}
+  if(r.w<1.)c*=.4+.2*mod(K,4.);
+  c+=exp(-mod(r.z,32.)*4.)*step(abs(abs(floor(r.w)-3.5)-1.5),.1);
+  gl_FragColor=vec4(sqrt(c)*(1.-.15*l*l)+fract(sin(dot(gl_FragCoord.xy,vec2(12.9,78.2))+r.z)*4e4)*.04-.02,1);
+}`]].map(([t,s])=>{h=g.createShader(t);g.shaderSource(h,s);g.compileShader(h);g.attachShader(p,h)});
+g.bindAttribLocation(p,0,'p');g.linkProgram(p);g.useProgram(p);
+g.bindBuffer(34962,g.createBuffer());g.bufferData(34962,new Float32Array([-1,-1,3,-1,-1,3]),35044);
+g.enableVertexAttribArray(0);g.vertexAttribPointer(0,2,5126,0,0,0);
+U=g.getUniformLocation(p,'r');V=g.getUniformLocation(p,'m');A=new AudioContext;B=[];s=0;
+W=t=>{
+  if(c.width!=innerWidth||c.height!=innerHeight)g.viewport(0,0,c.width=innerWidth,c.height=innerHeight);
+  g.uniform4f(U,c.width,c.height,t/1e3,(q=t/32e3&7)+(q&&q!=4&&!(q>6&&(t/8e3&3)>1)?.5:0));
+  g.drawArrays(4,0,3);requestAnimationFrame(W)};
+W(0);
+onmousemove=e=>g.uniform2f(V,e.x/innerWidth-.5,.5-e.y/innerHeight);
+onclick=_=>A.resume();
+// The song is built 16 seconds at a time, a little ahead of where the picture
+// is, and each finished block is queued to play exactly after the one before.
+A.onstatechange=P=_=>{
+  if(A.state<'s'){
+    M=performance.now()/1e3;
+    if(!s)s=[],N=M/16|0,Z=A.currentTime-M;
+    for(;B[N]&&N<=M/16+1;N++)q=A.createBufferSource(),q.buffer=B[N],q.connect(A.destination),d=Z+N*16,q.start(Math.max(d,A.currentTime),Math.max(A.currentTime-d,0)),s.push(q)
+  }
+};
+setInterval(P,200);
+(async _=>{
+  let R=A.sampleRate,L=R*16,X=[new Float32Array(1<<17),new Float32Array(1<<17)],n=0,i,j,k,t,b,D,v,w,u,e,f,q,x,o,c,S,K,O,Y,H,lp=0,g=0,p=0,z=0,bd=0,lo=0,b1=0,l1=0,b2=0,l2=0,sw;
+  for(;;n++){
+    while(n>performance.now()/16e3+2)await new Promise(r=>setTimeout(r,400));
+    n=Math.max(n,performance.now()/16e3|0);
+    b=A.createBuffer(2,L,R);D=[b.getChannelData(0),b.getChannelData(1)];
+    for(i=0;i<L;i++){
+      i%3e4||await new Promise(setTimeout);
+      j=n*L+i;t=j/R;
+      // S: section of the song (0 intro, 1 build, 2-3 main, 4 breakdown, 5-6 peak, 7 outro), K: 8-second phrase within it
+      S=t/32&7;K=t/8&3;
+      O=S&&S!=4&&!(S>6&&K>1);
+      Y=S>4&&S<7?2:0;
+      H=(S==6?[0,3,-4,-2]:[0,-4,3,-2])[t/4&3]+Y;
+      e=t*2%1/2;
+      x=O?1-Math.exp(-e*9):1;
+      // pad: six detuned saws through a filter that opens as the song builds
+      v=0;
+      for(o=0;o<6;o++)v+=110*2**((H+[0,7,12,14,19,24][o])/12)*(1+(o&1)*.006)*t%1-.5;
+      sw=v;
+      lp+=(v-lp)*Math.min(1,(S?S==4?500:800+900*K:200+25*(t%32))*6.3/R);
+      v=lp*x*.12*(K>2&&S>1?[1,1,0,1,1,0,1,0][t*8&7]:1);
+      // kick, kept out of the echo
+      u=O?Math.sin(200*Math.sqrt(e))*Math.exp(-e*6)*.55:0;
+      e=t%32;if((S==2||S==5)&&e<2)u+=Math.sin(500*Math.sqrt(e))*Math.exp(-e*2)*.4;
+      // plucked arpeggio, a different pattern for each phrase
+      e=t*8%1;
+      f=220*2**((H+[[0,7,12,14,19,14,12,7],[0,12,7,19,14,24,19,12],[0,7,14,19,24,19,14,7],[24,19,14,12,7,12,14,19]][K][t*8+(t/32|0)*3&7])/12)*6.283*t;
+      v+=Math.sin(f+(1+K)*Math.sin(f*2)*Math.exp(-e*3))*Math.exp(-e*4)*(S?.16:.1);
+      if(S>4&&S<7)e=(t*8+.5)%1,f=880*2**((H+[0,7,12,14,19,14,12,7][t*8+.5&7])/12)*6.283*t,v+=Math.sin(f+Math.sin(f*2)*Math.exp(-e*5))*Math.exp(-e*7)*.05;
+      // bass, pumping against the kick
+      if(O){e=t*4%1;f=55*2**(H/12)*6.283*t;v+=Math.sin(f+Math.sin(f)*(1.5-e))*x*.3}
+      // lead melody that slides between notes
+      if(S>2&&S<7){
+        g+=([[7,10,12,10,7,5,3,5],[12,15,14,12,10,12,7,10],[19,17,15,14,12,10,12,7]][(S+K)%3][t*2&7]+Y-g)*90/R;
+        p+=440*2**(g/12)*6.283/R;
+        e=t*2%1;
+        v+=(Math.sin(p+Math.sin(t*35)*.3)+Math.sin(p*2)/3+Math.sin(p*1.5)/5)*Math.min(1,e*20)*Math.exp(-e*1.5)*.11
+      }
+      // acid line: a saw through a resonant filter, in the peak and the last phrase of the main part
+      if(S>4&&S<7||S==3&&K>2){
+        q=t*8|0;e=t*8%1;
+        z+=55*2**((H+[0,0,12,0,7,0,12,10,0,12,0,7,0,3,12,15][q&15])/12)/R;
+        c=Math.min(.9,(300+2500*Math.exp(-e*5)*(q%3?1:.4)+800*Math.sin(t*.4)**2)*6.3/R);
+        bd+=c*(z%1-.5-lo-bd*.25);lo+=c*bd;
+        v+=Math.tanh(lo*2)*.13*x
+      }
+      // tom fill at the end of every phrase
+      if(O&&t%8>7)e=t*4%1/4,v+=Math.sin((900-200*(t*4&3))*Math.sqrt(e))*Math.exp(-e*12)*.3;
+      // soft keys in the breakdown and outro
+      if(S==4||S>6){e=t%1.5;for(o=0;o<3;o++)f=220*2**((H+[0,7,14][o])/12)*6.283*t,v+=Math.sin(f+Math.sin(f*3)*Math.exp(-e*6))*Math.exp(-e*2.5)*.07}
+      // choir: the pad's saws through two slowly moving vowel filters
+      if(S==4||S==6)c=(500+300*Math.sin(t*.8))*6.3/R,b1+=c*(sw-l1-b1*.1),l1+=c*b1,c*=1.7,b2+=c*(sw-l2-b2*.1),l2+=c*b2,v+=(b1+b2)*.02*x;
+      // bell counter-line in the second peak
+      if(S==6)e=(t*4+.5)%1,f=880*2**((H+[12,7,14,19][t*4&3])/12)*6.283*t,v+=Math.sin(f+Math.sin(f*3.5)*Math.exp(-e*4))*Math.exp(-e*5)*.06;
+      // hats, snare, riser, roll and crash
+      w=Math.random()*2-1;
+      if(S&&S!=4||K>2){
+        q=t*4%1/4;o=t*4&1;v+=w*Math.exp(-q*(o?25:90))*(o?.11:.05)*(1+(t*2&1)/2);
+        if(K>2||S>4)q=t*8%1/8,v+=w*Math.exp(-q*120)*.05
+      }
+      if(O&&S>1&&S<7)q=(t+.5)%1,v+=(w*.7+Math.sin(1100*q)*Math.exp(-q*30))*Math.exp(-q*14)*.2,v+=w*Math.exp(-Math.abs(q-.03)*150)*.1*(S>4);
+      if((S<2||S==4)&&K>2){
+        q=t%8/8;v+=(w*.12+Math.sin((t%8)**2*900)*.05)*q*q;
+        if(q>.75)e=t*(q>.9?16:8)%1,v+=w*Math.exp(-e*8)*q*.25
+      }
+      if(S>1&&S<7&&S!=4&&t%32<3)v+=w*Math.exp(-t%32*1.5)*.18;
+      // half a beat of silence before each drop; the echo rings through it
+      if(t%32>31.5&&(S==1||S==4))v=u=0;
+      // ping-pong echo and a short room, then a soft limiter
+      for(k=0;k<2;k++){
+        w=X[k];
+        o=v+X[1-k][j-(R*.375|0)&131071]*.4+(w[j-(R*(.031+k*.006)|0)&131071]+w[j-(R*(.043+k*.004)|0)&131071])*.2;
+        w[j&131071]=o;
+        D[k][i]=Math.tanh((o+u)*1.1)
+      }
+    }
+    B[n]=b;delete B[n-3]
+  }
+})()
+</script>

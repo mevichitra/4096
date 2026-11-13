@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4096</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#eaf6ff; --dim:#7d93ad; --cy:#5fe9ff; --or:#ffa64d; --line:rgba(95,233,255,.22);
+    --disp:"Chakra Petch",Bahnschrift,"Segoe UI",sans-serif;
+    --mono:"JetBrains Mono",Consolas,ui-monospace,monospace;
+  }
+  * { box-sizing:border-box; margin:0; }
+  html,body { height:100%; background:#02040a; color:var(--ink); font-family:var(--mono); font-size:13px; overflow:hidden; }
+  button { font:inherit; color:inherit; }
+
+  /* the piece is the page */
+  #view { position:fixed; inset:0; width:100%; height:100%; border:0; background:#000; }
+
+  /* ---------- index deck ---------- */
+  #deck {
+    position:fixed; inset:0; z-index:3; overflow:auto;
+    display:flex; flex-direction:column; justify-content:space-between; gap:40px;
+    padding:clamp(22px,5vw,64px);
+    background:
+      repeating-linear-gradient(0deg,transparent 0 3px,rgba(95,233,255,.035) 3px 4px),
+      linear-gradient(115deg,rgba(2,4,10,.94) 0%,rgba(2,4,10,.74) 48%,rgba(2,4,10,.22) 100%);
+    -webkit-backdrop-filter:blur(10px) saturate(1.3); backdrop-filter:blur(10px) saturate(1.3);
+    transition:opacity .6s, visibility .6s, transform .6s;
+  }
+  body.live #deck { opacity:0; visibility:hidden; transform:scale(1.04); }
+
+  .eyebrow { color:var(--cy); letter-spacing:.28em; text-transform:uppercase; font-size:11px; }
+
+  h1 {
+    font-family:var(--disp); font-weight:700; text-transform:uppercase;
+    font-size:clamp(54px,11vw,128px); line-height:.86; letter-spacing:-.02em; margin-top:18px;
+    animation:rise 1.1s cubic-bezier(.2,.8,.2,1) both;
+  }
+  h1 i { display:block; font-style:normal; font-size:.3em; letter-spacing:.42em; margin-top:.25em; color:transparent; -webkit-text-stroke:1px var(--cy); }
+  h1 b { color:var(--or); text-shadow:0 0 42px rgba(255,166,77,.45); }
+  @keyframes rise { from { opacity:0; letter-spacing:.3em; filter:blur(12px); } }
+
+  .stats { display:flex; gap:34px; flex-wrap:wrap; margin-top:26px; color:var(--dim); text-transform:uppercase; letter-spacing:.16em; font-size:11px; }
+  .stats b { display:block; font-family:var(--disp); font-size:24px; font-weight:500; color:var(--ink); letter-spacing:.04em; }
+
+  #list { list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:22px; max-width:1240px; }
+  #list button {
+    display:block; width:100%; padding:0; background:none; border:0; cursor:pointer; text-align:left;
+    text-transform:uppercase; letter-spacing:.14em; font-size:11px; color:var(--dim);
+  }
+  #list button:focus-visible { outline:1px solid var(--cy); outline-offset:5px; }
+  .shot { display:block; aspect-ratio:16/9; overflow:hidden; border:1px solid var(--line); background:#000; transition:border-color .3s; }
+  .shot img { display:block; width:100%; height:100%; object-fit:cover; filter:saturate(.7) brightness(.75); transition:filter .35s, transform .7s; }
+  #list button:hover .shot { border-color:rgba(255,255,255,.5); }
+  #list button:hover .shot img { filter:none; transform:scale(1.04); }
+  .cap { display:grid; grid-template-columns:auto 1fr; gap:2px 12px; align-items:baseline; padding:12px 2px 0; }
+  .no { color:var(--or); }
+  .theme { font-family:var(--disp); font-size:21px; font-weight:500; color:var(--ink); letter-spacing:.06em; }
+  .music, .bytes { grid-column:2; }
+  .bytes { margin-top:6px; }
+  .ghost .shot { border-style:dashed; background:none; display:flex; align-items:center; justify-content:center; color:#465570; text-transform:uppercase; letter-spacing:.14em; font-size:11px; }
+  .ghost .shot::after { content:"_"; animation:blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+
+  /* byte meter */
+  .m { display:inline-block; width:110px; height:8px; vertical-align:middle; margin-right:10px;
+       background:repeating-linear-gradient(90deg,rgba(95,233,255,.2) 0 3px,transparent 3px 5px); }
+  .m i { display:block; height:100%; background:repeating-linear-gradient(90deg,var(--or) 0 3px,transparent 3px 5px); }
+  .bytes { color:var(--ink); white-space:nowrap; }
+
+  .hint { color:var(--dim); letter-spacing:.14em; text-transform:uppercase; font-size:11px; }
+
+  /* ---------- live HUD ---------- */
+  .hud {
+    position:fixed; z-index:2; pointer-events:none; padding:24px 28px;
+    text-transform:uppercase; letter-spacing:.16em; font-size:11px; line-height:1.7;
+    text-shadow:0 0 6px #000, 0 0 14px #000; transition:opacity .5s;
+  }
+  .hud::before { content:""; position:absolute; width:16px; height:16px; border:0 solid var(--cy); opacity:.8; }
+  .tl { top:0; left:0; }      .tl::before { top:12px; left:12px; border-width:1px 0 0 1px; }
+  .tr { top:0; right:0; text-align:right; } .tr::before { top:12px; right:12px; border-width:1px 1px 0 0; }
+  .bl { bottom:0; left:0; }   .bl::before { bottom:12px; left:12px; border-width:0 0 1px 1px; }
+  .br { bottom:0; right:0; display:flex; gap:8px; } .br::before { bottom:12px; right:12px; border-width:0 1px 1px 0; }
+  .hud .big { font-family:var(--disp); font-size:20px; font-weight:500; letter-spacing:.08em; }
+  .hud .c { color:var(--cy); } .hud .o { color:var(--or); } .hud .d { color:var(--dim); }
+  body:not(.live) .hud { opacity:0; }
+  body.clean .hud:not(.br), body.clean .br::before { opacity:0; }
+  body.clean .k:not(#hide) { display:none; }
+  body.clean #hide { opacity:.22; }
+
+  .k { pointer-events:auto; cursor:pointer; text-transform:uppercase; letter-spacing:.16em; font-size:11px;
+       background:rgba(2,4,10,.55); border:1px solid var(--line); padding:8px 13px;
+       -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); transition:.2s; }
+  .k:hover { color:var(--cy); border-color:var(--cy); box-shadow:0 0 18px rgba(95,233,255,.3); opacity:1 !important; }
+  body:not(.live) .hud .k { pointer-events:none; }
+  #top { position:absolute; top:clamp(22px,5vw,64px); right:clamp(22px,5vw,64px); display:flex; gap:8px; }
+
+  @media (max-width:640px) {
+    .hud { padding:18px 20px; }
+    .tr { display:none; }
+  }
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<iframe id="view" title="current piece" allow="autoplay; fullscreen"></iframe>
+
+<!-- HUD shown while a piece is playing -->
+<div class="hud tl"><span class="c" id="h-site">4096</span> <span class="d">/</span> <span class="o" id="h-no"></span><br><span class="big" id="h-theme"></span></div>
+<div class="hud tr"><span class="d">file size</span><br><span class="m"><i id="h-bar"></i></span><span id="h-bytes"></span></div>
+<div class="hud bl"><span class="d">music:</span> <span id="h-track"></span><br><span class="d" id="h-tip">drag to look around. double-click for fullscreen.</span></div>
+<div class="hud br">
+  <button class="k" id="index">Back</button>
+  <button class="k" id="sound">Sound: off</button>
+  <button class="k" id="full">Fullscreen</button>
+  <button class="k" id="size">Size: 4K</button>
+  <button class="k" id="hide">Hide text</button>
+</div>
+
+<!-- index deck -->
+<div id="deck">
+  <div id="top"><button class="k" id="size2">Size: 4K</button><button class="k" id="sound2">Sound: off</button></div>
+  <div>
+    <div class="eyebrow" id="e-line"></div>
+    <h1><span id="m-a">40</span><b id="m-b">96</b><i>bytes</i></h1>
+    <div class="stats">
+      <div><b id="s-count">00</b>pieces</div>
+      <div><b id="s-limit">4,096</b>bytes at most, each</div>
+      <div><b>0</b>image or sound files inside a piece</div>
+    </div>
+  </div>
+  <ol id="list"></ol>
+  <div class="hint">Pick one to watch. Everything you see and hear comes from that one small file.</div>
+</div>
+
+<script>
+// To add a piece: drop its file in this folder, put a 16:9 picture of it in
+// thumbs/, and add one line here.
+const LIMIT = 4096;
+const PIECES = [
+  { file: '01-glass-hive.html', thumb: 'thumbs/01-glass-hive.jpg', theme: 'Glass Hive', track: 'Lantern', bytes: 4092,
+    // bigger cuts of the same piece: more bytes, mostly spent on a longer song
+    more: [{ label: '8K', limit: 8192, file: '01-glass-hive-8k.html', bytes: 8141 }] },
+  { file: '02-last-orbit.html', thumb: 'thumbs/02-last-orbit.jpg', theme: 'Last Orbit', track: 'Undertow', bytes: 4085,
+    more: [{ label: '8K', limit: 8192, file: '02-last-orbit-8k.html', bytes: 6824 }] },
+  { file: '03-aurora-sea.html', thumb: 'thumbs/03-aurora-sea.jpg', theme: 'Aurora Sea', track: 'Slow Tide', bytes: 4026,
+    more: [{ label: '8K', limit: 8192, file: '03-aurora-sea-8k.html', bytes: 6640 }] },
+  { file: '04-daybreak.html', thumb: 'thumbs/04-daybreak.jpg', theme: 'Daybreak', track: 'Caravan', bytes: 4091,
+    more: [{ label: '8K', limit: 8192, file: '04-daybreak-8k.html', bytes: 7410 }] },
+  { file: '05-becoming.html', thumb: 'thumbs/05-becoming.jpg', theme: 'Becoming', track: 'Seedsong', bytes: 3911,
+    more: [{ label: '8K', limit: 8192, file: '05-becoming-8k.html', bytes: 7566 }] },
+  { file: '06-ember.html', thumb: 'thumbs/06-ember.jpg', theme: 'Ember', track: 'Slow Burn', bytes: 3674 },
+];
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const view = $('view');
+let current = -1;
+// The whole site is in one size at a time: 0 is the 4K originals, 1 the 8K cuts.
+// The site's name is that size's byte limit, so it changes with the switch.
+let size = 0;
+const SIZES = [{ label: '4K', limit: 4096, mark: ['40', '96'] }, { label: '8K', limit: 8192, mark: ['81', '92'] }];
+const cuts = p => [{ label: '4K', limit: LIMIT, file: p.file, bytes: p.bytes }].concat(p.more || []);
+const cutOf = p => cuts(p)[Math.min(size, cuts(p).length - 1)];
+
+function load(i) {
+  const p = PIECES[i];
+  const cut = cutOf(p);
+  if (view.getAttribute('src') !== cut.file) view.src = cut.file;
+  current = i;
+  $('h-no').textContent = pad(i + 1);
+  $('h-theme').textContent = p.theme;
+  $('h-track').textContent = p.track;
+  $('h-bytes').textContent = `${cut.bytes.toLocaleString()} / ${cut.limit.toLocaleString()} B`;
+  $('h-bar').style.width = Math.min(100, cut.bytes / cut.limit * 100) + '%';
+}
+
+// Sound is on by default once a piece is opened. Each piece starts its own
+// music from its click handler; the site calls that for the viewer and adds a
+// volume control so the Sound button can mute without stopping the picture.
+// A browser only allows sound after a click, so the Sound button is that click.
+// soundOn stays null until the viewer chooses; opening a piece counts as "on".
+let soundOn = null;
+function applySound() {
+  const want = soundOn === true;
+  $('sound').textContent = $('sound2').textContent = want ? 'Sound: on' : 'Sound: off';
+  let w;
+  try { w = view.contentWindow; if (!w.document || !w.A) return; }
+  catch (e) { $('h-tip').textContent = 'click the picture for sound. move the mouse to look around.'; $('sound').style.display = $('sound2').style.display = 'none'; return; }
+  // Each piece prepares its music in the background and plays it whenever its
+  // audio is allowed to run, picking up at the point that matches the picture.
+  if (want) w.A.resume();
+  else { w.A.suspend(); [].concat(w.s || []).forEach(n => { try { n.stop(); } catch (e) {} }); w.s = 0; }
+}
+view.addEventListener('load', applySound);
+
+// Look around: hold the mouse button (or a finger) and drag the picture to
+// turn the view; double-click switches fullscreen. Each piece on its own
+// follows the mouse without a button, so the site replaces that here. It also
+// takes over the piece's click-for-sound, which the Sound button now does.
+function applyLook() {
+  try {
+    const w = view.contentWindow;
+    let x = 0, y = 0;
+    const set = () => w.g.uniform2f(w.V, x, y);
+    w.onmousemove = w.onclick = null;
+    w.c.style.cursor = 'grab';
+    w.c.style.touchAction = 'none';
+    w.onpointermove = e => {
+      if (!(e.buttons & 1)) return;
+      x = Math.max(-.7, Math.min(.7, x - e.movementX / w.innerWidth));
+      y = Math.max(-.45, Math.min(.45, y + e.movementY / w.innerHeight));
+      set();
+    };
+    w.onpointerdown = () => { w.c.style.cursor = 'grabbing'; };
+    w.onpointerup = () => { w.c.style.cursor = 'grab'; };
+    w.ondblclick = toggleFull;
+    set();
+  } catch (e) {}
+}
+view.addEventListener('load', applyLook);
+
+function enter(i) { load(i); document.body.classList.add('live'); document.body.classList.remove('clean'); $('hide').textContent = 'Hide text'; if (soundOn === null) soundOn = true; applySound(); }
+
+// Draws everything that depends on the size: the name, the numbers and the cards.
+function paint() {
+  const z = SIZES[size], n = z.limit.toLocaleString();
+  document.title = String(z.limit);
+  $('h-site').textContent = z.limit;
+  $('m-a').textContent = z.mark[0];
+  $('m-b').textContent = z.mark[1];
+  $('e-line').textContent = `Art and music that fit in ${n} bytes`;
+  $('s-limit').textContent = n;
+  $('size').textContent = $('size2').textContent = 'Size: ' + z.label;
+  $('list').textContent = '';
+  PIECES.forEach((p, i) => {
+    const cut = cutOf(p), li = document.createElement('li');
+    li.innerHTML = `<button>
+      <span class="shot"><img alt=""></span>
+      <span class="cap">
+        <span class="no">${pad(i + 1)}</span><span class="theme"></span>
+        <span class="music"></span>
+        <span class="bytes"><span class="m"><i style="width:${Math.min(100, cut.bytes / cut.limit * 100)}%"></i></span>${cut.bytes.toLocaleString()} B</span>
+      </span></button>`;
+    li.querySelector('img').src = p.thumb;
+    li.querySelector('.theme').textContent = p.theme;
+    li.querySelector('.music').textContent = 'music: ' + p.track;
+    li.firstChild.onclick = () => enter(i);
+    $('list').appendChild(li);
+  });
+  const ghost = document.createElement('li');
+  ghost.className = 'ghost';
+  ghost.innerHTML = '<span class="shot"></span>';
+  ghost.firstChild.textContent = `${pad(PIECES.length + 1)} coming soon`;
+  $('list').appendChild(ghost);
+}
+$('s-count').textContent = pad(PIECES.length);
+
+$('index').onclick = () => document.body.classList.remove('live');
+$('sound').onclick = $('sound2').onclick = () => { soundOn = !soundOn; applySound(); };
+// Fullscreen hides the text by default; "Show text" brings it back.
+function toggleFull() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+$('full').onclick = toggleFull;
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  $('full').textContent = on ? 'Exit fullscreen' : 'Fullscreen';
+  document.body.classList.toggle('clean', on);
+  $('hide').textContent = on ? 'Show text' : 'Hide text';
+});
+$('size').onclick = $('size2').onclick = () => { size = (size + 1) % SIZES.length; paint(); load(current); };
+$('hide').onclick = () => { $('hide').textContent = document.body.classList.toggle('clean') ? 'Show text' : 'Hide text'; };
+addEventListener('keydown', e => { if (e.key === 'Escape' && !document.fullscreenElement) $('index').onclick(); });
+
+paint();
+load(0); // the first piece runs behind the index
+</script>
+</body>
+</html>
